@@ -55,7 +55,7 @@
 
 ---
 
-uv add -r requirements.txt
+
 
 # Telegram Echo Bot with PostgreSQL, Redis, and Admin Tools
 
@@ -117,6 +117,9 @@ docker compose up -d
 
 ```bash
 pip install -r requirements.txt
+```
+```commandline
+uv add -r requirements.txt
 ```
 
 8. Apply database migrations using the command:
