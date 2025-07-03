@@ -19,7 +19,9 @@ from app.infrastructure.database.connection import get_pg_pool
 from config.config import Config
 from redis.asyncio import Redis
 
+
 logger = logging.getLogger(__name__)
+
 
 # Функция конфигурирования и запуска бота
 async def main(config: Config) -> None:
@@ -31,7 +33,7 @@ async def main(config: Config) -> None:
             port=config.redis.port,
             db=config.redis.db,
             password=config.redis.password,
-            username=config.redis.username
+            username=config.redis.username,
         )
     )
 
@@ -42,7 +44,7 @@ async def main(config: Config) -> None:
     )
     dp = Dispatcher(storage=storage)
 
-    # Создаем пул соединений с Postgres
+    # Создаём пул соединений с Postgres
     db_pool: psycopg_pool.AsyncConnectionPool = await get_pg_pool(
         db_name=config.db.name,
         host=config.db.host,
@@ -50,17 +52,18 @@ async def main(config: Config) -> None:
         user=config.db.user,
         password=config.db.password,
     )
+
     # Получаем словарь с переводами
     translations = get_translations()
-    # Формируем список локалей из ключей словаря с переводами
+    # формируем список локалей из ключей словаря с переводами
     locales = list(translations.keys())
 
     # Подключаем роутеры в нужном порядке
-    logger.info("Connecting routers...")
+    logger.info("Including routers...")
     dp.include_routers(settings_router, admin_router, user_router, others_router)
 
-    # Подключаем middleware в нужном порядке
-    logger.info("Connecting middlewares...")
+    # Подключаем миддлвари в нужном порядке
+    logger.info("Including middlewares...")
     dp.update.middleware(DataBaseMiddleware())
     dp.update.middleware(ShadowBanMiddleware())
     dp.update.middleware(ActivityCounterMiddleware())
@@ -71,6 +74,7 @@ async def main(config: Config) -> None:
     try:
         await dp.start_polling(
             bot, db_pool=db_pool,
+            translations=translations,
             locales=locales,
             admin_ids=config.bot.admin_ids
         )
