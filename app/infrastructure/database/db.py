@@ -54,13 +54,14 @@ async def add_user(
 
 
 async def get_user(
-    conn: AsyncConnection,
-    *,
-    user_id: int,
+        conn: AsyncConnection,
+        *,
+        user_id: int,
 ) -> tuple[Any, ...] | None:
-    async with conn.cursor() as cursor:
-        data = await cursor.execute(
-            query="""
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                """
                 SELECT 
                     id,
                     user_id,
@@ -70,13 +71,17 @@ async def get_user(
                     is_alive,
                     banned,
                     created_at
-                    FROM users WHERE user_id = %s;
-            """,
-            params=(user_id,),
-        )
-        row = await data.fetchone()
-    logger.info("Row is %s", row)
-    return row if row else None
+                FROM users WHERE user_id = %s;
+                """,
+                (user_id,),
+            )
+            row = await cursor.fetchone()
+
+        logger.info("Row is %s", row)
+        return row if row else None
+    except Exception as e:
+        logger.error(f"Error getting user for user_id={user_id}: {e}")
+        return None
 
 
 async def change_user_alive_status(
@@ -130,7 +135,7 @@ async def change_user_banned_status_by_username(
             """,
             params=(banned, username)
         )
-    logger.info("Updated `banned` status to `%s` for username %s", banned, username)
+    logger.info("Updated `banned` status to `%s` for user %d", banned, username)
 
 
 async def update_user_lang(
@@ -157,17 +162,17 @@ async def get_user_lang(
     user_id: int,
 ) -> str | None:
     async with conn.cursor() as cursor:
-        data = await cursor.execute(
+        await cursor.execute(
             query="""
                 SELECT language FROM users WHERE user_id = %s;
             """,
             params=(user_id,),
         )
-        row = await data.fetchone()
+        row = await cursor.fetchone()
     if row:
-        logger.info("The user with `user_id`=%s has the language %s", user_id, row[0])
+        logger.info("The user with `user_id`=%s has the language %s", user_id, row)
     else:
-        logger.warning("No user with `user_id`=%s found in the database", user_id)
+        logger.warning("No user with `user_id`=%s found in the database, or language is not set", user_id)
     return row[0] if row else None
 
 
@@ -177,13 +182,13 @@ async def get_user_alive_status(
     user_id: int,
 ) -> bool | None:
     async with conn.cursor() as cursor:
-        data = await cursor.execute(
+        await cursor.execute(
             query="""
                 SELECT is_alive FROM users WHERE user_id = %s;
             """,
             params=(user_id,),
         )
-        row = await data.fetchone()
+        row = await cursor.fetchone()
     if row:
         logger.info("The user with `user_id`=%s has the is_alive status is %s", user_id, row[0])
     else:
@@ -192,23 +197,27 @@ async def get_user_alive_status(
 
 
 async def get_user_banned_status_by_id(
-    conn: AsyncConnection,
-    *,
-    user_id: int,
+        conn: AsyncConnection,
+        *,
+        user_id: int,
 ) -> bool | None:
-    async with conn.cursor() as cursor:
-        data = await cursor.execute(
-            query="""
-                SELECT banned FROM users WHERE user_id = %s;
-            """,
-            params=(user_id,),
-        )
-        row = await data.fetchone()
-    if row:
-        logger.info("The user with `user_id`=%s has the banned status is %s", user_id, row[0])
-    else:
-        logger.warning("No user with `user_id`=%s found in the database", user_id)
-    return row[0] if row else None
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                """SELECT banned FROM users WHERE user_id = %s;""",
+                (user_id,),
+            )
+            row = await cursor.fetchone()
+
+        if row:
+            logger.info("The user with `user_id`=%s has the banned status is %s", user_id, row[0])
+            return row[0]
+        else:
+            logger.warning("No user with `user_id`=%s found in the database", user_id)
+            return None
+    except Exception as e:
+        logger.error(f"Error getting user banned status for user_id={user_id}: {e}")
+        return None
 
 
 async def get_user_banned_status_by_username(
@@ -217,13 +226,13 @@ async def get_user_banned_status_by_username(
     username: str,
 ) -> bool | None:
     async with conn.cursor() as cursor:
-        data = await cursor.execute(
+        await cursor.execute(
             query="""
                 SELECT banned FROM users WHERE username = %s;
             """,
             params=(username,),
         )
-        row = await data.fetchone()
+        row = await cursor.fetchone()
     if row:
         logger.info("The user with `username`=%s has the banned status is %s", username, row[0])
     else:
@@ -232,23 +241,32 @@ async def get_user_banned_status_by_username(
 
 
 async def get_user_role(
-    conn: AsyncConnection,
-    *,
-    user_id: int,
+        conn: AsyncConnection,
+        *,
+        user_id: int,
 ) -> UserRole | None:
-    async with conn.cursor() as cursor:
-        data = await cursor.execute(
-            query="""
-                SELECT role FROM users WHERE user_id = %s;
-            """,
-            params=(user_id,),
-        )
-        row = await data.fetchone()
-    if row:
-        logger.info("The user with `user_id`=%s has the role is %s", user_id, row[0])
-    else:
-        logger.warning("No user with `user_id`=%s found in the database", user_id)
-    return UserRole(row[0]) if row else None
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                """SELECT role FROM users WHERE user_id = %s;""",
+                (user_id,),
+            )
+            row = await cursor.fetchone()
+
+        if row:
+            logger.info("The user with `user_id`=%s has the role is %s", user_id, row[0])
+            # Добавляем обработку ошибки enum
+            try:
+                return UserRole(row[0])
+            except ValueError:
+                logger.error(f"Invalid role value '{row[0]}' for user {user_id}")
+                return UserRole.USER  # возвращаем роль по умолчанию
+        else:
+            logger.warning("No user with `user_id`=%s found in the database", user_id)
+            return None
+    except Exception as e:
+        logger.error(f"Error getting user role for user_id={user_id}: {e}")
+        return None
 
 
 async def add_user_activity(
@@ -270,9 +288,9 @@ async def add_user_activity(
     logger.info("User activity updated. table=`activity`, user_id=%d", user_id)
 
 
-async def get_statistics(conn: AsyncConnection) -> list[Any, ...] | None:
+async def get_statistics(conn: AsyncConnection) -> tuple[Any, ...] | None:
     async with conn.cursor() as cursor:
-        data = await cursor.execute(
+        await cursor.execute(
             query="""
                 SELECT user_id, SUM(actions) AS total_actions
                 FROM activity
@@ -281,6 +299,6 @@ async def get_statistics(conn: AsyncConnection) -> list[Any, ...] | None:
                 LIMIT 5;
             """,
         )
-        rows = await data.fetchall()
+        rows = await cursor.fetchall()
     logger.info("Users activity got from table=`activity`")
     return [*rows] if rows else None
