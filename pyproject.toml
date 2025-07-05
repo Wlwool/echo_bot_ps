@@ -40,6 +40,9 @@ dependencies = [
     "yarl==1.20.0",
 ]
 
+[tool.setuptools]
+packages = ["app", "config", "locales", "migrations"]
+
 [tool.black]
 line-length = 90
 target-version = ['py313']
