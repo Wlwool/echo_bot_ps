@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class LangSettingsMiddleware(BaseMiddleware):
-    async def __call__(
+    async def __call__(  # type: ignore[override]
         self,
         handler: Callable[[Update, dict[str, Any]], Awaitable[Any]],
         event: Update,
