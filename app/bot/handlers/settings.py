@@ -112,9 +112,10 @@ async def process_cancel_click(
     state: FSMContext,
 ):
     user_lang = await get_user_lang(conn, user_id=callback.from_user.id)
-    await callback.message.edit_text(
-        text=i18n.get("lang_cancelled").format(i18n.get(user_lang))
-    )
+    if isinstance(callback.message, Message):
+        await callback.message.edit_text(
+            text=i18n.get("lang_cancelled").format(i18n.get(user_lang))
+        )
     await state.update_data(lang_settings_msg_id=None, user_lang=None)
     await state.set_state()
 
@@ -126,11 +127,12 @@ async def process_lang_click(
     callback: CallbackQuery, i18n: dict[str, str], locales: list[str]
 ):
     try:
-        await callback.message.edit_text(
-            text=i18n.get("/lang"),
-            reply_markup=get_lang_settings_kb(
-                i18n=i18n, locales=locales, checked=callback.data
-            ),
-        )
+        if isinstance(callback.message, Message):
+            await callback.message.edit_text(
+                text=i18n.get("/lang"),
+                reply_markup=get_lang_settings_kb(
+                    i18n=i18n, locales=locales, checked=callback.data
+                ),
+            )
     except TelegramBadRequest:
         await callback.answer()
