@@ -56,7 +56,6 @@
 ---
 
 
-
 # Telegram Echo Bot with PostgreSQL, Redis, and Admin Tools
 
 This project is a **Telegram Echo Bot** powered by `aiogram`, designed to demonstrate practical integration with a **relational database (PostgreSQL)** and **Redis**. The bot includes **user role management**, **language selection**, and **admin tools** for moderation and user analytics.
