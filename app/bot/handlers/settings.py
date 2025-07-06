@@ -13,11 +13,7 @@ from app.bot.filters.filters import LocaleFilter
 from app.bot.keyboards.keyboards import get_lang_settings_kb
 from app.bot.keyboards.menu_button import get_main_menu_commands
 from app.bot.states.states import LangSG
-from app.infrastructure.database.db import (
-    get_user_lang,
-    get_user_role,
-    update_user_lang,
-)
+from app.infrastructure.database.db import get_user_lang, get_user_role, update_user_lang
 
 logger = logging.getLogger(__name__)
 
