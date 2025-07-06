@@ -47,7 +47,10 @@ async def process_admin_statistics_command(
 # Этот хэндлер будет срабатывать на команду /ban для пользователя с ролью `UserRole.ADMIN`
 @admin_router.message(Command("ban"))
 async def process_ban_command(
-    message: Message, command: CommandObject, conn: AsyncConnection, i18n: dict[str, str]
+    message: Message,
+    command: CommandObject,
+    conn: AsyncConnection,
+    i18n: dict[str, str],
 ) -> None:
     args = command.args
 
@@ -86,7 +89,10 @@ async def process_ban_command(
 # Этот хэндлер будет срабатывать на команду /unban для пользователя с ролью `UserRole.ADMIN`
 @admin_router.message(Command("unban"))
 async def process_unban_command(
-    message: Message, command: CommandObject, conn: AsyncConnection, i18n: dict[str, str]
+    message: Message,
+    command: CommandObject,
+    conn: AsyncConnection,
+    i18n: dict[str, str],
 ) -> None:
     args = command.args
 

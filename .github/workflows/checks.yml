@@ -40,7 +40,7 @@ jobs:
       - name: Run code format & lint checks
         run: |
           uv run black --check --diff .
-          uv run isort --check-only --diff .
+          uv run isort --check-only --diff . --profile black
           uv run flake8 .
           uv run mypy .
 

@@ -13,7 +13,11 @@ from app.bot.filters.filters import LocaleFilter
 from app.bot.keyboards.keyboards import get_lang_settings_kb
 from app.bot.keyboards.menu_button import get_main_menu_commands
 from app.bot.states.states import LangSG
-from app.infrastructure.database.db import get_user_lang, get_user_role, update_user_lang
+from app.infrastructure.database.db import (
+    get_user_lang,
+    get_user_role,
+    update_user_lang,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +44,9 @@ async def process_any_message_when_lang(
 
     msg = await message.answer(
         text=i18n.get("/lang"),
-        reply_markup=get_lang_settings_kb(i18n=i18n, locales=locales, checked=user_lang),
+        reply_markup=get_lang_settings_kb(
+            i18n=i18n, locales=locales, checked=user_lang
+        ),
     )
 
     await state.update_data(lang_settings_msg_id=msg.message_id)
@@ -60,7 +66,9 @@ async def process_lang_command(
 
     msg = await message.answer(
         text=i18n.get("/lang"),
-        reply_markup=get_lang_settings_kb(i18n=i18n, locales=locales, checked=user_lang),
+        reply_markup=get_lang_settings_kb(
+            i18n=i18n, locales=locales, checked=user_lang
+        ),
     )
 
     await state.update_data(lang_settings_msg_id=msg.message_id, user_lang=user_lang)

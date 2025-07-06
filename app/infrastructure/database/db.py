@@ -217,7 +217,9 @@ async def get_user_banned_status_by_id(
 
         if row:
             logger.info(
-                "The user with `user_id`=%s has the banned status is %s", user_id, row[0]
+                "The user with `user_id`=%s has the banned status is %s",
+                user_id,
+                row[0],
             )
             return row[0]
         else:
@@ -264,7 +266,9 @@ async def get_user_role(
             row = await cursor.fetchone()
 
         if row:
-            logger.info("The user with `user_id`=%s has the role is %s", user_id, row[0])
+            logger.info(
+                "The user with `user_id`=%s has the role is %s", user_id, row[0]
+            )
             # Добавляем обработку ошибки enum
             try:
                 return UserRole(row[0])
