@@ -6,30 +6,32 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import TelegramObject, User
 from psycopg import AsyncConnection
 
-from app.infrastructure.database.db import get_user_lang, get_user, add_user
+from app.infrastructure.database.db import add_user, get_user, get_user_lang
 
 logger = logging.getLogger(__name__)
 
 
 class TranslatorMiddleware(BaseMiddleware):
     async def __call__(
-            self,
-            handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
-            event: TelegramObject,
-            data: dict[str, Any],
+        self,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: dict[str, Any],
     ) -> Any:
         user: User = data.get("event_from_user")
         if user is None:
             return await handler(event, data)
 
-        state: FSMContext = data.get('state')
+        state: FSMContext = data.get("state")
         user_context_data = await state.get_data()
 
-        if (user_lang := user_context_data.get('user_lang')) is None:
+        if (user_lang := user_context_data.get("user_lang")) is None:
             conn: AsyncConnection = data.get("conn")
             if conn is None:
                 logger.error("Database connection not found in middleware data.")
-                raise RuntimeError("Missing database connection for detecting the user's language.")
+                raise RuntimeError(
+                    "Missing database connection for detecting the user's language."
+                )
 
             # Проверяем, существует ли пользователь в БД
             existing_user = await get_user(conn, user_id=user.id)
@@ -39,12 +41,15 @@ class TranslatorMiddleware(BaseMiddleware):
                     conn,
                     user_id=user.id,
                     username=user.username,
-                    language=user.language_code or "ru",  # используем язык из Telegram или "ru" по умолчанию
+                    language=user.language_code
+                    or "ru",  # используем язык из Telegram или "ru" по умолчанию
                 )
                 user_lang = user.language_code or "ru"
-                logger.info(f"Auto-created user {user.id} ({user.username}) with language {user_lang}")
+                logger.info(
+                    f"Auto-created user {user.id} ({user.username}) with language {user_lang}"
+                )
             else:
-                user_lang: str | None = await get_user_lang(conn, user_id=user.id)
+                user_lang: str | None = await get_user_lang(conn, user_id=user.id)  # type: ignore[no-redef]
                 if user_lang is None:
                     user_lang = user.language_code or "ru"
 
@@ -70,7 +75,9 @@ class TranslatorMiddleware(BaseMiddleware):
                     data["i18n"] = translations[available_langs[0]]
                 else:
                     data["i18n"] = {}
-                logger.warning(f"Language {user_lang} not found in translations, using fallback")
+                logger.warning(
+                    f"Language {user_lang} not found in translations, using fallback"
+                )
         else:
             data["i18n"] = i18n
 

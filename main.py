@@ -14,6 +14,6 @@ logging.basicConfig(
 )
 
 if sys.platform.startswith("win") or os.name == "nt":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # type: ignore[attr-defined]
 
 asyncio.run(main(config))

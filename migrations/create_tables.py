@@ -3,10 +3,10 @@ import logging
 import os
 import sys
 
-from app.infrastructure.database.connection import get_pg_connection
-from config.config import Config, load_config
 from psycopg import AsyncConnection, Error
 
+from app.infrastructure.database.connection import get_pg_connection
+from config.config import Config, load_config
 
 config: Config = load_config()
 
@@ -18,9 +18,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 if sys.platform.startswith("win") or os.name == "nt":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # type: ignore[attr-defined]
 
-async def main():
+
+async def main() -> None:
     connection: AsyncConnection | None = None
 
     try:
@@ -45,7 +46,7 @@ async def main():
                                 role VARCHAR(30) NOT NULL,
                                 is_alive BOOLEAN NOT NULL,
                                 banned BOOLEAN NOT NULL
-                            ); 
+                            );
                         """
                     )
                     await cursor.execute(
@@ -70,5 +71,6 @@ async def main():
         if connection:
             await connection.close()
             logger.info("Connection to Postgres was closed")
+
 
 asyncio.run(main())

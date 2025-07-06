@@ -3,18 +3,20 @@ from typing import Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
 from aiogram.types import Update, User
-from app.infrastructure.database.db import add_user_activity
 from psycopg import AsyncConnection
+
+from app.infrastructure.database.db import add_user_activity
 
 logger = logging.getLogger(__name__)
 
 
 class ActivityCounterMiddleware(BaseMiddleware):
     async def __call__(
-            self,
-            handler: Callable[[Update, dict[str, Any]], Awaitable[Any]],
-            event: Update,
-            data: dict[str, Any],) -> Any:
+        self,
+        handler: Callable[[Update, dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: dict[str, Any],
+    ) -> Any:
 
         user: User = data.get("event_from_user")
         if user is None:

@@ -6,10 +6,12 @@ from environs import Env
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class BotSettings:
     token: str
     admin_ids: list[int]
+
 
 @dataclass
 class DatabaseSettings:
@@ -19,6 +21,7 @@ class DatabaseSettings:
     user: str
     password: str
 
+
 @dataclass
 class RedisSettings:
     host: str
@@ -27,10 +30,12 @@ class RedisSettings:
     password: str
     username: str
 
+
 @dataclass
 class LoggSettings:
     level: str
     format: str
+
 
 @dataclass
 class Config:
@@ -38,6 +43,7 @@ class Config:
     db: DatabaseSettings
     redis: RedisSettings
     log: LoggSettings
+
 
 def load_config(path: str | None = None) -> Config:
     env = Env()
@@ -88,5 +94,5 @@ def load_config(path: str | None = None) -> Config:
         bot=BotSettings(token=token, admin_ids=admin_ids),
         db=db,
         redis=redis,
-        log=logg_settings
+        log=logg_settings,
     )

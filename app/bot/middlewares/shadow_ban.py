@@ -3,18 +3,19 @@ from typing import Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Update, User
-from app.infrastructure.database.db import get_user_banned_status_by_id
 from psycopg import AsyncConnection
+
+from app.infrastructure.database.db import get_user_banned_status_by_id
 
 logger = logging.getLogger(__name__)
 
 
 class ShadowBanMiddleware(BaseMiddleware):
     async def __call__(
-            self,
-            handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
-            event: Update,
-            data: dict[str, Any],
+        self,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: dict[str, Any],
     ) -> Any:
         user: User = data.get("event_from_user")
 

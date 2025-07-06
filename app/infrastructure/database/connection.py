@@ -9,19 +9,22 @@ logger = logging.getLogger(__name__)
 
 # Функция, возвращающая безопасную строку `conninfo` для подключения к PostgreSQL
 def build_pg_conninfo(
-        db_name: str,
-        host: str,
-        port: int,
-        user: str,
-        password: str,
-        ) -> str:
-        conninfo = (
-            f"postgresql://{quote(user, safe='')}:{quote(password, safe='')}"
+    db_name: str,
+    host: str,
+    port: int,
+    user: str,
+    password: str,
+) -> str:
+    conninfo = (
+        f"postgresql://{quote(user, safe='')}:{quote(password, safe='')}"
         f"@{host}:{port}/{db_name}"
-        )
-        logger.debug(f"Building PostgreSQL connection string (password omitted): "
-                     f"postgresql://{quote(user, safe='')}@{host}:{port}/{db_name}")
-        return conninfo
+    )
+    logger.debug(
+        f"Building PostgreSQL connection string (password omitted): "
+        f"postgresql://{quote(user, safe='')}@{host}:{port}/{db_name}"
+    )
+    return conninfo
+
 
 # Функция, логирующая версию СУБД, к которой происходит подключение
 async def log_db_version(connection: AsyncConnection) -> None:
@@ -32,6 +35,7 @@ async def log_db_version(connection: AsyncConnection) -> None:
             logger.info(f"Connected to PostgreSQL version {db_version[0]}")
     except Exception as er:
         logger.warning("Failed to fetch DB version: %s", er)
+
 
 # Функция, возвращающая открытое соединение с СУБД PostgreSQL
 async def get_pg_connection(
@@ -54,6 +58,7 @@ async def get_pg_connection(
             await connection.close()
         raise
 
+
 # Функция, возвращающая пул соединений с СУБД PostgreSQL
 async def get_pg_pool(
     db_name: str,
@@ -64,7 +69,7 @@ async def get_pg_pool(
     min_size: int = 1,
     max_size: int = 3,
     timeout: float | None = 10.0,
-    ) -> AsyncConnectionPool:
+) -> AsyncConnectionPool:
     conninfo = build_pg_conninfo(db_name, host, port, user, password)
     db_pool: AsyncConnectionPool | None = None
 
