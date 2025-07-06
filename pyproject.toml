@@ -45,7 +45,7 @@ packages = ["app", "config", "locales", "migrations"]
 
 [tool.black]
 line-length = 90
-target-version = ['py313']
+target-version = ['py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
