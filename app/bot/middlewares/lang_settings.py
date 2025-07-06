@@ -15,7 +15,6 @@ class LangSettingsMiddleware(BaseMiddleware):
         event: Update,
         data: dict[str, Any],
     ) -> Any:
-
         user: User = data.get("event_from_user")
         if user is None:
             return await handler(event, data)

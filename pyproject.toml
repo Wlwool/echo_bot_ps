@@ -56,6 +56,7 @@ extend-exclude = '''
   | env
   | build
   | dist
+  | \.postgres_data
   | __pycache__
 )/
 '''

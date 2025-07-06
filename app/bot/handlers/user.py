@@ -35,7 +35,6 @@ async def process_start_command(
     admin_ids: list[int],
     translations: dict,
 ):
-
     user_row = await get_user(conn, user_id=message.from_user.id)
     if user_row is None:
         if message.from_user.id in admin_ids:
