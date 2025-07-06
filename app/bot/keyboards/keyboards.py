@@ -10,11 +10,7 @@ def get_lang_settings_kb(
             continue
         if locale == checked:
             buttons.append(
-                [
-                    InlineKeyboardButton(
-                        text=f"🔘 {i18n.get(locale)}", callback_data=locale
-                    )
-                ]
+                [InlineKeyboardButton(text=f"🔘 {i18n.get(locale)}", callback_data=locale)]
             )
         else:
             buttons.append(
