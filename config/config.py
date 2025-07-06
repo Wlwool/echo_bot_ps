@@ -1,6 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
+from typing import List
 
 from environs import Env
 
@@ -60,7 +61,7 @@ def load_config(path: str | None = None) -> Config:
     if not token:
         raise ValueError("BOT_TOKEN must be not empty")
 
-    raw_ids = env.list("ADMIN_IDS", default=[])
+    raw_ids: List[str] = env.list("ADMIN_IDS", default=[])
 
     try:
         admin_ids = [int(x) for x in raw_ids]

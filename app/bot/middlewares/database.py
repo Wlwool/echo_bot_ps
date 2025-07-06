@@ -2,7 +2,7 @@ import logging
 from typing import Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
-from aiogram.types import Update
+from aiogram.types import TelegramObject
 from psycopg_pool import AsyncConnectionPool
 
 logger = logging.getLogger(__name__)
@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 class DataBaseMiddleware(BaseMiddleware):
     async def __call__(
         self,
-        handler: Callable[[Update, dict[str, Any]], Awaitable[Any]],
-        event: Update,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
         data: dict[str, Any],
     ) -> Any:
         db_pool: AsyncConnectionPool = data.get("db_pool")
