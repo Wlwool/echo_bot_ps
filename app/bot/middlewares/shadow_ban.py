@@ -33,7 +33,7 @@ class ShadowBanMiddleware(BaseMiddleware):
             )
             if user_banned_status:
                 logger.warning("Shadow-banned user tried to interact: %d", user.id)
-                if event.callback_query:
+                if hasattr(event, "callback_query") and event.callback_query:
                     await event.callback_query.answer()
                 return
         except Exception as e:

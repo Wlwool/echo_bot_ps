@@ -87,7 +87,10 @@ async def process_save_click(
     await update_user_lang(
         conn, language=data.get("user_lang"), user_id=callback.from_user.id
     )
-    await callback.message.edit_text(text=i18n.get("lang_saved"))
+    if isinstance(callback.message, Message):
+        await callback.message.edit_text(text=i18n.get("lang_saved"))
+    else:
+        logger.warning("Message is inaccessible, cannot edit text")
 
     user_role = await get_user_role(conn, user_id=callback.from_user.id)
     await bot.set_my_commands(
